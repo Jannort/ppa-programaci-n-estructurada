@@ -1,0 +1,110 @@
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <string>
+#include <limits> 
+using namespace std;
+
+struct Cliente {
+    string nombre;
+    string numero;
+    string placa;
+    string trabajo;
+    double valorTrabajo;
+};
+
+bool verificarClave() {
+    string clave;
+    cout << "Ingrese la clave de seguridad: ";
+    cin >> clave;
+
+    return clave == "ADMI";
+}
+
+Cliente ingresarCliente() {
+    Cliente cliente;
+
+    cout << "Ingrese el nombre del cliente: ";
+    cin >> cliente.nombre;
+
+    cout << "Ingrese el número del cliente: ";
+    cin >> cliente.numero;
+
+    cout << "Ingrese la placa de la moto: ";
+    cin >> cliente.placa;
+
+    cout << "Ingrese el trabajo a realizar en la moto: ";
+    cin.ignore(); 
+    getline(cin, cliente.trabajo);
+
+    while (true) {
+        cout << "Ingrese el valor total del trabajo: ";
+        if (cin >> cliente.valorTrabajo) {
+            break;
+        } else {
+            cout << "Error. Ingrese un número válido." << endl;
+            cin.clear(); 
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+        }
+    }
+
+    return cliente;
+}
+int buscarClientePorNombre(const vector<Cliente> &clientes, const string &nombre) {
+    for (size_t i = 0; i < clientes.size(); ++i) {
+        if (clientes[i].nombre == nombre) {
+            return i; 
+        }
+    }
+    return -1; 
+}
+
+int main() {
+    vector<Cliente> clientes;
+    double totalDinero = 0.0;
+
+    if (!verificarClave()) {
+        cout << "Clave incorrecta. Programa terminado." << endl;
+        return 1;
+    }
+
+    char opcion;
+    do {
+        cout << "\nRegistro de cliente:" << endl;
+        clientes.push_back(ingresarCliente());
+        totalDinero += clientes.back().valorTrabajo; 
+
+        cout << "\n¿Desea ingresar otro cliente? (S/N): ";
+        cin >> opcion;
+    } while (opcion == 'S' || opcion == 's');
+
+    cout << "\nFactura / Informe:" << endl;
+    cout << setw(20) << "Nombre" << setw(15) << "Número" << setw(15) << "Placa"
+         << setw(25) << "Trabajo Realizado" << setw(20) << "Valor Total" << endl;
+
+    for (const auto &cliente : clientes) {
+        cout << setw(20) << cliente.nombre << setw(15) << cliente.numero
+             << setw(15) << cliente.placa << setw(25) << cliente.trabajo
+             << setw(20) << cliente.valorTrabajo << endl;
+    }
+
+    cout << "\nTotal de dinero ingresado: $" << totalDinero << endl;
+
+  string nombreBuscar;
+  cout << "\nIngrese el nombre del cliente a buscar: ";
+  cin >> nombreBuscar;
+
+  int indiceCliente = buscarClientePorNombre(clientes, nombreBuscar);
+  if (indiceCliente != -1) {
+      cout << "\nCliente encontrado:" << endl;
+      cout << setw(20) << "Nombre" << setw(15) << "Número" << setw(15) << "Placa"
+           << setw(25) << "Trabajo Realizado" << setw(20) << "Valor Total" << endl;
+      cout << setw(20) << clientes[indiceCliente].nombre << setw(15) << clientes[indiceCliente].numero
+           << setw(15) << clientes[indiceCliente].placa << setw(25) << clientes[indiceCliente].trabajo
+           << setw(20) << clientes[indiceCliente].valorTrabajo << endl;
+  } else {
+      cout << "\nCliente no encontrado." << endl;
+  }
+
+  return 0;
+}
